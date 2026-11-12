@@ -1,0 +1,52 @@
+---
+import { Icon } from 'astro-icon/components';
+import { ui, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'es' } = Astro.props;
+const t = ui[lang];
+
+const year = new Date().getFullYear();
+
+const whatsappNumber = '524428322734';
+const whatsappMessage = encodeURIComponent('Hola, vi el sitio de Contables del Puerto y me interesan tus servicios de desarrollo web.');
+const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
+
+const social = [
+  { label: 'Facebook', icon: 'lucide:facebook', href: 'https://www.facebook.com/contablesdelpuerto#' },
+  { label: 'Instagram', icon: 'lucide:instagram', href: 'https://www.facebook.com/contablesdelpuerto#' },
+  { label: 'Twitter / X', icon: 'lucide:twitter', href: 'https://www.facebook.com/contablesdelpuerto#' },
+];
+---
+<footer class="site-footer">
+  <svg class="footer-hump" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 100 C 22 100, 30 0, 50 0 C 70 0, 78 100, 100 100 Z" />
+  </svg>
+
+  <div class="container footer-main">
+    <a href="#inicio" class="footer-logo" data-reveal aria-label={t.header.brandLabel}>
+      <img src="/images/brand.svg" alt="Soluciones Contables del Puerto" width="734" height="209" loading="lazy" />
+    </a>
+
+    <p class="footer-tagline" data-reveal style="--reveal-delay: 0.1s">
+      {t.footer.tagline}
+    </p>
+
+    <ul class="footer-social" data-reveal style="--reveal-delay: 0.2s">
+      {social.map((item) => (
+        <li>
+          <a href={item.href} aria-label={`${item.label} (${t.footer.newTab})`} target="_blank" rel="noopener">
+            <Icon name={item.icon} aria-hidden="true" />
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="container footer-bottom">
+    <p>© {year} Contables del Puerto. {t.footer.rights}</p>
+    <a href={whatsappLink} target="_blank" rel="noopener" aria-label={t.footer.studioLabel}>aulizstudio.com</a>
+  </div>
+</footer>

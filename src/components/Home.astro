@@ -1,0 +1,33 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from './Header.astro';
+import Hero from './Hero.astro';
+import Benefits from './Benefits.astro';
+import About from './About.astro';
+import Philosophy from './Philosophy.astro';
+import Services from './Services.astro';
+import CallToAction from './CallToAction.astro';
+import Contact from './Contact.astro';
+import Footer from './Footer.astro';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+---
+<Layout lang={lang}>
+  <Header lang={lang} />
+  <main id="contenido" tabindex="-1">
+    <div class="masthead">
+      <Hero lang={lang} />
+    </div>
+    <Benefits lang={lang} />
+    <About lang={lang} />
+    <Philosophy lang={lang} />
+    <Services lang={lang} />
+    <CallToAction lang={lang} />
+    <Contact lang={lang} />
+  </main>
+  <Footer lang={lang} />
+</Layout>

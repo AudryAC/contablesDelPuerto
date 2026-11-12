@@ -1,0 +1,30 @@
+---
+import { Icon } from 'astro-icon/components';
+import { ui, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'es' } = Astro.props;
+const t = ui[lang];
+
+const icons = ['lucide:chart-no-axes-combined', 'lucide:shield', 'lucide:users-round', 'lucide:clock'];
+const benefits = t.benefits.items.map((item, i) => ({ ...item, icon: icons[i] }));
+---
+<section class="benefits container" aria-labelledby="benefits-title">
+  <h2 id="benefits-title" class="sr-only">{t.benefits.label}</h2>
+  {benefits.map((item) => (
+    <article class="benefit">
+      <div class="benefit-icon" aria-hidden="true"><Icon name={item.icon} is:inline /></div>
+      <div><h3>{item.title}</h3><p>{item.body}</p></div>
+    </article>
+  ))}
+</section>
+<script>
+  const card = document.querySelector<HTMLElement>('.benefits');
+  card?.addEventListener('pointermove', (e) => {
+    const rect = card.getBoundingClientRect();
+    card.style.setProperty('--mx', `${e.clientX - rect.left}px`);
+    card.style.setProperty('--my', `${e.clientY - rect.top}px`);
+  });
+</script>

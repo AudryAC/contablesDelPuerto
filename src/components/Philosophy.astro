@@ -1,0 +1,67 @@
+---
+import { Icon } from 'astro-icon/components';
+import waves from '../../public/images/waves-philosophy.svg?raw';
+import wavesMobile from '../../public/images/waves-philosophy-mobile.svg?raw';
+import { animateWaves } from '../utils/waves';
+import { ui, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'es' } = Astro.props;
+const t = ui[lang];
+
+const animatedWaves = animateWaves(
+  waves,
+  [null, { amp: 10, k: 1.5, dur: 11 }, { amp: 9, k: 1, dur: 14 }, { amp: 13, k: 1.5, dur: 9 }, { amp: 10, k: 2, dur: 7 }],
+  { axis: 'y' },
+);
+
+const animatedWavesMobile = animateWaves(
+  wavesMobile,
+  [{ amp: 4, k: 1, dur: 12 }, { amp: 5, k: 1.5, dur: 9 }, { amp: 5, k: 1, dur: 11 }, { amp: 4, k: 1.5, dur: 8 }],
+  { axis: 'y' },
+);
+
+const icons = ['lucide:handshake', 'lucide:shield-check', 'lucide:chart-column-increasing'];
+const values = t.philosophy.values.map((value, i) => ({ ...value, icon: icons[i] }));
+---
+<section class="philosophy" id="filosofia" data-section-reveal aria-labelledby="philosophy-title">
+  <div class="philosophy-bg philosophy-bg--desktop" aria-hidden="true" set:html={animatedWaves} />
+  <div class="philosophy-bg philosophy-bg--mobile" aria-hidden="true" set:html={animatedWavesMobile} />
+
+  <div class="container philosophy-inner">
+    <div class="philosophy-copy">
+      <p class="section-label section-label--light" data-reveal>{t.philosophy.label}</p>
+      <h2 id="philosophy-title" data-reveal style="--reveal-delay: 0.1s">{t.philosophy.title}</h2>
+      <p data-reveal style="--reveal-delay: 0.2s">{t.philosophy.body}</p>
+    </div>
+
+    <ul class="philosophy-values">
+      {values.map((value, i) => (
+        <li data-reveal style={`--reveal-delay: ${0.15 + i * 0.12}s`}>
+          <span class="philosophy-icon" aria-hidden="true"><Icon name={value.icon} is:inline /></span>
+          <div>
+            <h3>{value.title}</h3>
+            <p>{value.body}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll<SVGSVGElement>('.philosophy-bg svg').forEach((svg) => {
+    if (reduceMotion) {
+      svg.pauseAnimations();
+      svg.setCurrentTime(0);
+    } else if ('IntersectionObserver' in window) {
+      new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) svg.unpauseAnimations();
+        else svg.pauseAnimations();
+      }).observe(svg);
+    }
+  });
+</script>

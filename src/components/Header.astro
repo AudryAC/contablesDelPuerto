@@ -1,0 +1,243 @@
+---
+import brandSvg from '../../public/images/brand.svg?raw';
+import { paths, ui, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'es' } = Astro.props;
+const t = ui[lang];
+const otherLang: Lang = lang === 'es' ? 'en' : 'es';
+
+const links = t.header.nav;
+const whatsappMessage = encodeURIComponent(t.header.whatsappMessage);
+const whatsappLink = `https://wa.me/523222265537?text=${whatsappMessage}`;
+const whatsappIcon = 'M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z';
+const brandLogo = brandSvg
+  .replace('<svg', '<svg class="brand-logo" role="img" aria-label="Soluciones Contables del Puerto"')
+  .replaceAll('fill="white"', 'fill="currentColor"')
+  .replaceAll('fill="#D9D9D9"', 'class="brand-accent"');
+
+---
+<header class="site-header" id="top">
+  <div class="container header-inner">
+    <a class="brand" href="#inicio" aria-label={t.header.brandLabel}>
+      <Fragment set:html={brandLogo} />
+    </a>
+
+    <nav class="desktop-nav" aria-label={t.header.mainNav}>
+      {links.map((link, i) => <a class:list={['nav-link', {active:i===0}]} href={link.href}>{link.label}</a>)}
+    </nav>
+
+    <div class="header-actions">
+      <a
+        class="lang-switch"
+        href={paths[otherLang]}
+        hreflang={otherLang}
+        lang={ui[otherLang].meta.htmlLang}
+        data-lang={lang}
+        aria-label={t.header.switchLabel}
+      >
+        <svg class="lang-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /><path d="M2 12h20" /></svg>
+        <span class="lang-options" aria-hidden="true">
+          <span class="lang-option" data-option="es">ES</span>
+          <span class="lang-option" data-option="en">EN</span>
+        </span>
+      </a>
+
+      <a class="btn btn-primary header-cta" href={whatsappLink} target="_blank" rel="noopener" aria-label={t.header.ctaLabel}>
+        {t.header.cta} <svg class="btn-icon btn-icon--whatsapp" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d={whatsappIcon} /></svg>
+      </a>
+
+      <button
+        class="menu-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="mobile-navigation"
+        aria-label={t.header.openMenu}
+        data-open-label={t.header.openMenu}
+        data-close-label={t.header.closeMenu}
+      >
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+  <nav class="mobile-nav" id="mobile-navigation" aria-label={t.header.mobileNav} hidden>
+    {links.map((link) => <a href={link.href}>{link.label}</a>)}
+    <a href={whatsappLink} target="_blank" rel="noopener" aria-label={t.header.ctaLabel}>{t.header.cta} <svg class="btn-icon btn-icon--whatsapp" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d={whatsappIcon} /></svg></a>
+  </nav>
+</header>
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
+  const mobileNav = document.querySelector<HTMLElement>('.mobile-nav');
+  const isOpen = () => toggle?.getAttribute('aria-expanded') === 'true';
+  function setOpen(open: boolean, { focus = false } = {}) {
+    if (!toggle || !mobileNav) return;
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', (open ? toggle.dataset.closeLabel : toggle.dataset.openLabel) ?? '');
+    mobileNav.hidden = !open;
+    if (open && focus) mobileNav.querySelector<HTMLAnchorElement>('a')?.focus();
+  }
+  toggle?.addEventListener('click', (e) => setOpen(!isOpen(), { focus: e.detail === 0 }));
+  mobileNav?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 900) setOpen(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isOpen()) {
+      setOpen(false);
+      toggle?.focus();
+    }
+  });
+  document.addEventListener('click', (e) => {
+    if (isOpen() && !(e.target as Element).closest('.site-header')) setOpen(false);
+  });
+  mobileNav?.addEventListener('focusout', (e) => {
+    const next = e.relatedTarget as Node | null;
+    if (isOpen() && next && !mobileNav.contains(next) && next !== toggle) setOpen(false);
+  });
+
+  const POSITION_KEY = 'lang-switch-position';
+  const pageSections = () => [...document.querySelectorAll<HTMLElement>('main section[id]')];
+  const pageTop = (el: HTMLElement) => {
+    let top = 0;
+    for (let node: HTMLElement | null = el; node; node = node.offsetParent as HTMLElement | null) top += node.offsetTop;
+    return top;
+  };
+
+  const langSwitch = document.querySelector<HTMLAnchorElement>('.lang-switch');
+  langSwitch?.addEventListener('click', (e) => {
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+
+    if (window.scrollY > 24) {
+      const probe = window.scrollY + window.innerHeight * 0.35;
+      const current = pageSections().filter((section) => pageTop(section) <= probe).pop();
+      if (current) {
+        const progress = (window.scrollY - pageTop(current)) / Math.max(current.offsetHeight, 1);
+        try {
+          sessionStorage.setItem(POSITION_KEY, JSON.stringify({ id: current.id, progress }));
+        } catch {}
+      }
+    }
+
+    const target = langSwitch.getAttribute('href') ?? '/';
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      window.location.href = target;
+      return;
+    }
+    langSwitch.dataset.lang = langSwitch.dataset.lang === 'es' ? 'en' : 'es';
+    window.setTimeout(() => (window.location.href = target), 280);
+  });
+
+  try {
+    const saved = sessionStorage.getItem(POSITION_KEY);
+    sessionStorage.removeItem(POSITION_KEY);
+    const position = saved ? (JSON.parse(saved) as { id: string; progress: number }) : null;
+    const section = position && document.getElementById(position.id);
+    if (position && section) {
+      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+      window.scrollTo(0, pageTop(section) + position.progress * section.offsetHeight);
+    }
+  } catch {}
+
+  const header = document.querySelector<HTMLElement>('.site-header');
+  const navLinks = [...document.querySelectorAll<HTMLAnchorElement>('.desktop-nav .nav-link')];
+  const linkedSections = navLinks
+    .map((link) => document.querySelector<HTMLElement>(link.getAttribute('href') ?? ''))
+    .filter((section): section is HTMLElement => Boolean(section));
+
+  let headerTicking = false;
+  const updateHeader = () => {
+    headerTicking = false;
+    header?.classList.toggle('is-scrolled', window.scrollY > 24);
+
+    const probe = window.innerHeight * 0.35;
+    let current = linkedSections[0];
+    linkedSections.forEach((section) => {
+      if (section.getBoundingClientRect().top <= probe) current = section;
+    });
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) {
+      current = linkedSections[linkedSections.length - 1];
+    }
+    navLinks.forEach((link) => {
+      const active = link.getAttribute('href') === `#${current?.id}`;
+      link.classList.toggle('active', active);
+      if (active) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+  };
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (!headerTicking) {
+        headerTicking = true;
+        requestAnimationFrame(updateHeader);
+      }
+    },
+    { passive: true },
+  );
+  window.addEventListener('resize', updateHeader);
+  window.addEventListener('load', updateHeader);
+  window.addEventListener('scrollend', updateHeader);
+  window.addEventListener('touchend', () => requestAnimationFrame(updateHeader), { passive: true });
+  window.addEventListener('pageshow', updateHeader);
+  window.addEventListener('hashchange', updateHeader);
+  updateHeader();
+
+  const layer = document.querySelector<HTMLElement>('.hero-layer');
+  const targets = document.querySelectorAll<HTMLElement>('.nav-link, .menu-toggle');
+  let SVG_W = 1;
+  let SVG_H = 1;
+
+  async function setupContrast() {
+    if (!layer || !targets.length) return;
+    const res = await fetch('/images/hero-layer.svg');
+    const doc = new DOMParser().parseFromString(await res.text(), 'image/svg+xml');
+    const viewBox = doc.documentElement.getAttribute('viewBox')?.split(/[\s,]+/).map(Number);
+    if (!viewBox) return;
+    [, , SVG_W, SVG_H] = viewBox;
+    const paths = doc.querySelectorAll('path');
+    const d = paths[paths.length - 1]?.getAttribute('d');
+    if (!d) return;
+
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
+    const dark = document.createElementNS(ns, 'path');
+    dark.setAttribute('d', d);
+    svg.appendChild(dark);
+    document.body.appendChild(svg);
+
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const box = layer.getBoundingClientRect();
+      if (!box.width) {
+        targets.forEach((el) => el.classList.remove('on-light'));
+        return;
+      }
+      targets.forEach((el) => {
+        const r = el.getBoundingClientRect();
+        if (!r.width) return;
+        const x = ((r.left + r.width / 2 - box.left) / box.width) * SVG_W;
+        const y = ((r.top + r.height / 2 - box.top) / box.height) * SVG_H;
+        const point = new DOMPoint(x, y);
+        const overDark = x >= 0 && x <= SVG_W && dark.isPointInFill(point);
+        el.classList.toggle('on-light', !overDark);
+      });
+    };
+    const schedule = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+    update();
+    layer.addEventListener('animationend', update);
+    window.addEventListener('resize', schedule);
+    window.addEventListener('scroll', schedule, { passive: true });
+  }
+  setupContrast().catch(() => {});
+</script>

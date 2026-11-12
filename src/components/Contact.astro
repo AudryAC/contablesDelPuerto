@@ -1,0 +1,243 @@
+---
+import { Icon } from 'astro-icon/components';
+import { ui, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'es' } = Astro.props;
+const t = ui[lang];
+
+const email = 'delpuerto.conta@gmail.com';
+const address = 'Cupuri 83, Aramara, 48314 Puerto Vallarta, Jalisco';
+const mapQuery = encodeURIComponent(`Soluciones Contables del Puerto, ${address}`);
+const mapEmbed = `https://www.google.com/maps?q=${encodeURIComponent(address)}&z=15&output=embed`;
+const directions = `https://www.google.com/maps/dir/?api=1&destination=${mapQuery}`;
+
+const info = [
+  { icon: 'lucide:phone', title: t.contact.phone, lines: ['322 226 5537'], href: 'tel:+523222265537' },
+  { icon: 'lucide:mail', title: t.contact.email, lines: [email], href: `mailto:${email}` },
+  { icon: 'lucide:map-pin', title: t.contact.address, lines: ['Cupuri 83, Aramara,', '48314 Puerto Vallarta,', 'Jalisco'], href: directions },
+  { icon: 'lucide:clock', title: t.contact.hours, lines: t.contact.hoursLines },
+];
+---
+<section class="contact" id="contacto" data-section-reveal aria-labelledby="contact-title">
+  <div class="container">
+    <div class="contact-top">
+      <div class="contact-copy">
+        <p class="section-label" data-reveal>{t.contact.label}</p>
+        <h2 id="contact-title" data-reveal style="--reveal-delay: 0.1s" set:html={t.contact.title} />
+        <p class="contact-intro" data-reveal style="--reveal-delay: 0.2s">{t.contact.intro}</p>
+
+        <ul class="contact-info">
+          {info.map((item, i) => (
+            <li data-reveal style={`--reveal-delay: ${0.25 + i * 0.08}s`}>
+              <span class="contact-info-icon" aria-hidden="true"><Icon name={item.icon} is:inline /></span>
+              <div>
+                <h3>{item.title}</h3>
+                {item.href ? (
+                  <a href={item.href} target={item.href.startsWith('http') ? '_blank' : undefined} rel={item.href.startsWith('http') ? 'noopener' : undefined}>
+                    {item.lines.map((line, n) => <>{line.split('@').map((part, k) => <>{k > 0 && <>@<wbr /></>}{part}</>)}{n < item.lines.length - 1 && <br />}</>)}
+                  </a>
+                ) : (
+                  <p>{item.lines.map((line, n) => <>{line}{n < item.lines.length - 1 && <br />}</>)}</p>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <form
+        class="contact-form"
+        data-reveal
+        style="--reveal-delay: 0.15s"
+        novalidate
+        data-email={email}
+        data-subject={t.contact.mailSubject}
+        data-name-label={t.contact.mailName}
+        data-email-label={t.contact.mailEmail}
+        data-phone-label={t.contact.mailPhone}
+        data-error-name={t.contact.errors.name}
+        data-error-email-required={t.contact.errors.emailRequired}
+        data-error-email-invalid={t.contact.errors.emailInvalid}
+        data-error-phone={t.contact.errors.phone}
+        data-error-message={t.contact.errors.message}
+      >
+        <div class="field">
+          <label for="cf-name">{t.contact.name} <span class="req" aria-hidden="true">*</span></label>
+          <div class="input-wrap">
+            <Icon name="lucide:user" is:inline aria-hidden="true" />
+            <input id="cf-name" name="nombre" type="text" placeholder={t.contact.namePlaceholder} autocomplete="name" required aria-describedby="cf-name-error" />
+          </div>
+          <p class="field-error" id="cf-name-error" hidden></p>
+        </div>
+        <div class="field">
+          <label for="cf-email">{t.contact.email} <span class="req" aria-hidden="true">*</span></label>
+          <div class="input-wrap">
+            <Icon name="lucide:mail" is:inline aria-hidden="true" />
+            <input id="cf-email" name="correo" type="email" placeholder={t.contact.emailPlaceholder} autocomplete="email" inputmode="email" required aria-describedby="cf-email-error" />
+          </div>
+          <p class="field-error" id="cf-email-error" hidden></p>
+        </div>
+        <div class="field">
+          <label for="cf-phone">{t.contact.phone}</label>
+          <div class="input-wrap">
+            <Icon name="lucide:phone" is:inline aria-hidden="true" />
+            <input id="cf-phone" name="telefono" type="tel" placeholder="322 123 4567" autocomplete="tel" inputmode="tel" aria-describedby="cf-phone-error" />
+          </div>
+          <p class="field-error" id="cf-phone-error" hidden></p>
+        </div>
+        <div class="field">
+          <div class="field-head">
+            <label for="cf-message">{t.contact.message} <span class="req" aria-hidden="true">*</span></label>
+            <button type="button" class="field-clear" aria-controls="cf-message" hidden>
+              <Icon name="lucide:eraser" is:inline aria-hidden="true" />
+              {t.contact.clear}
+            </button>
+          </div>
+          <div class="input-wrap input-wrap--textarea">
+            <Icon name="lucide:message-square" is:inline aria-hidden="true" />
+            <textarea id="cf-message" name="mensaje" rows="4" placeholder={t.contact.messagePlaceholder} required aria-describedby="cf-message-error"></textarea>
+          </div>
+          <p class="field-error" id="cf-message-error" hidden></p>
+        </div>
+
+        <div class="form-status form-status--error" role="alert" hidden>
+          <Icon name="lucide:circle-alert" is:inline aria-hidden="true" />
+          <p>{t.contact.errors.summary}</p>
+        </div>
+        <div class="form-status form-status--success" role="status" tabindex="-1" hidden>
+          <Icon name="lucide:circle-check" is:inline aria-hidden="true" />
+          <p>
+            <strong>{t.contact.successTitle}</strong>
+            {t.contact.successBody} <a href={`mailto:${email}`}>{email}</a> {t.contact.successOr} <a href="tel:+523222265537">322 226 5537</a>.
+          </p>
+        </div>
+
+        <button type="submit" class="btn btn-primary contact-submit" data-loading-label={t.contact.sending}>
+          <span class="contact-submit-label">{t.contact.submit}</span>
+          <Icon name="lucide:arrow-right" class="btn-icon" aria-hidden="true" />
+          <span class="contact-spinner" aria-hidden="true"></span>
+        </button>
+      </form>
+    </div>
+
+    <div class="contact-map" data-reveal style="--reveal-delay: 0.1s">
+      <iframe
+        src={mapEmbed}
+        title={t.contact.mapTitle}
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </div>
+</section>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('.contact-form');
+  const messageField = document.querySelector<HTMLTextAreaElement>('#cf-message');
+  const clearButton = document.querySelector<HTMLButtonElement>('.field-clear');
+
+  if (messageField && clearButton) {
+    const syncClear = () => {
+      clearButton.hidden = !messageField.value;
+    };
+    messageField.addEventListener('input', syncClear);
+    clearButton.addEventListener('click', () => {
+      messageField.value = '';
+      messageField.classList.remove('is-prefilled');
+      syncClear();
+      messageField.focus();
+    });
+    syncClear();
+  }
+
+  if (form) {
+    const submit = form.querySelector<HTMLButtonElement>('.contact-submit');
+    const submitLabel = form.querySelector<HTMLSpanElement>('.contact-submit-label');
+    const errorBox = form.querySelector<HTMLElement>('.form-status--error');
+    const successBox = form.querySelector<HTMLElement>('.form-status--success');
+    const d = form.dataset;
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+    const rules: Record<string, (value: string) => string> = {
+      nombre: (v) => (v ? '' : d.errorName ?? ''),
+      correo: (v) => (!v ? d.errorEmailRequired ?? '' : emailPattern.test(v) ? '' : d.errorEmailInvalid ?? ''),
+      telefono: (v) => {
+        const digits = v.replace(/\D/g, '');
+        return !v || (digits.length >= 10 && digits.length <= 13) ? '' : d.errorPhone ?? '';
+      },
+      mensaje: (v) => (v ? '' : d.errorMessage ?? ''),
+    };
+
+    const validateField = (field: HTMLInputElement | HTMLTextAreaElement) => {
+      const message = rules[field.name]?.(field.value.trim()) ?? '';
+      const error = document.getElementById(`${field.id}-error`);
+      field.setAttribute('aria-invalid', String(Boolean(message)));
+      if (error) {
+        error.textContent = message;
+        error.hidden = !message;
+      }
+      return !message;
+    };
+
+    const fields = [...form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea')];
+    fields.forEach((field) => {
+      field.addEventListener('blur', () => {
+        if (field.value.trim() || field.getAttribute('aria-invalid') === 'true') validateField(field);
+      });
+      field.addEventListener('input', () => {
+        if (field.getAttribute('aria-invalid') === 'true') validateField(field);
+        if (successBox) successBox.hidden = true;
+        if (errorBox && !fields.some((f) => f.getAttribute('aria-invalid') === 'true')) errorBox.hidden = true;
+      });
+    });
+
+    const setLoading = (loading: boolean) => {
+      if (!submit || !submitLabel) return;
+      submit.classList.toggle('is-loading', loading);
+      submit.disabled = loading;
+      submit.setAttribute('aria-busy', String(loading));
+      if (loading) {
+        submit.dataset.label = submitLabel.textContent ?? '';
+        submitLabel.textContent = submit.dataset.loadingLabel ?? '';
+      } else if (submit.dataset.label) {
+        submitLabel.textContent = submit.dataset.label;
+      }
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (successBox) successBox.hidden = true;
+      const invalid = fields.filter((field) => !validateField(field));
+      if (invalid.length) {
+        if (errorBox) errorBox.hidden = false;
+        invalid[0].focus();
+        return;
+      }
+      if (errorBox) errorBox.hidden = true;
+
+      const data = new FormData(form);
+      const subject = `${d.subject}: ${data.get('nombre')}`;
+      const body = [
+        `${d.nameLabel}: ${data.get('nombre')}`,
+        `${d.emailLabel}: ${data.get('correo')}`,
+        `${d.phoneLabel}: ${data.get('telefono') || '—'}`,
+        '',
+        `${data.get('mensaje')}`,
+      ].join('\n');
+
+      setLoading(true);
+      window.setTimeout(() => {
+        window.location.href = `mailto:${d.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        setLoading(false);
+        if (successBox) {
+          successBox.hidden = false;
+          successBox.focus({ preventScroll: true });
+        }
+      }, 700);
+    });
+  }
+</script>

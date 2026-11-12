@@ -1,0 +1,73 @@
+---
+import { Icon } from 'astro-icon/components';
+import ctaLayerSvg from '../../public/images/call-action-layer.svg?raw';
+import { ui, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'es' } = Astro.props;
+const t = ui[lang];
+
+const pointIcons = ['lucide:timer', 'lucide:shield-check', 'lucide:chart-no-axes-combined'];
+const points = t.cta.points.map((text, i) => ({ icon: pointIcons[i], text }));
+const ctaLayer = ctaLayerSvg
+  .replace(/<svg([^>]*?)\s*preserveAspectRatio="[^"]*"/, '<svg$1')
+  .replace('<svg', '<svg preserveAspectRatio="none"');
+---
+<section class="cta" data-section-reveal aria-labelledby="cta-title">
+  <div class="cta-banner">
+    <video
+      class="cta-photo"
+      src="/videos/puerto.mp4"
+      poster="/images/puerto-vallarta.webp"
+      muted
+      loop
+      playsinline
+      preload="none"
+      aria-hidden="true"
+      tabindex="-1"
+    ></video>
+    <div class="cta-panel" aria-hidden="true" set:html={ctaLayer} />
+
+    <div class="container cta-inner">
+      <div class="cta-copy">
+        <p class="section-label section-label--light" data-reveal>{t.cta.label}</p>
+        <h2 id="cta-title" data-reveal style="--reveal-delay: 0.1s">{t.cta.title}</h2>
+        <div data-reveal style="--reveal-delay: 0.2s">
+          <a href="#contacto" class="btn btn-primary">
+            {t.cta.button} <Icon name="lucide:arrow-right" class="btn-icon" aria-hidden="true" />
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="container cta-points">
+    {points.map((point, i) => (
+      <li data-reveal style={`--reveal-delay: ${i * 0.12}s`}>
+        <span class="cta-point-icon" aria-hidden="true"><Icon name={point.icon} is:inline /></span>
+        <span>{point.text}</span>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<script>
+  const video = document.querySelector<HTMLVideoElement>('.cta video');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+  const largeScreen = window.matchMedia('(min-width: 601px)').matches;
+  if (video && largeScreen && !saveData && !reduceMotion && 'IntersectionObserver' in window) {
+    new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { rootMargin: '200px 0px' },
+    ).observe(video);
+  }
+</script>

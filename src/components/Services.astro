@@ -1,0 +1,74 @@
+---
+import { Icon } from 'astro-icon/components';
+import { ui, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'es' } = Astro.props;
+const t = ui[lang];
+
+const icons = ['lucide:clipboard-clock', 'lucide:database', 'lucide:file-text', 'lucide:user', 'lucide:messages-square', 'lucide:file-search'];
+const services = t.services.items.map((service, i) => ({ ...service, icon: icons[i] }));
+---
+<section class="services" id="servicios" data-section-reveal aria-labelledby="services-title" data-message={t.services.message}>
+  <div class="container">
+    <header class="services-header">
+      <p class="section-label section-label--center" data-reveal>{t.services.label}</p>
+      <h2 id="services-title" data-reveal style="--reveal-delay: 0.1s">{t.services.title}</h2>
+      <p data-reveal style="--reveal-delay: 0.2s">{t.services.intro}</p>
+    </header>
+
+    <div class="services-grid">
+      {services.map((service, i) => (
+        <article class="service-card" data-reveal style={`--reveal-delay: ${0.1 + (i % 3) * 0.12}s`}>
+          <div class="service-icon" aria-hidden="true"><Icon name={service.icon} is:inline /></div>
+          <div class="service-body">
+            <h3>{service.title}</h3>
+            <p>{service.body}</p>
+            <a
+              class="service-link"
+              href="#contacto"
+              data-service={service.title}
+              data-service-body={service.body}
+              aria-label={`${t.services.linkLabel} ${service.title}`}
+            >
+              <Icon name="lucide:arrow-right" aria-hidden="true" />
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+<script>
+  const message = document.querySelector<HTMLTextAreaElement>('#cf-message');
+  const nameField = document.querySelector<HTMLInputElement>('#cf-name');
+  const contact = document.querySelector<HTMLElement>('#contacto');
+
+  document.querySelectorAll<HTMLAnchorElement>('.service-link').forEach((link) => {
+    link.addEventListener('click', (e) => {
+      if (!message || !contact) return;
+      e.preventDefault();
+      const { service, serviceBody } = link.dataset;
+      const template = document.querySelector<HTMLElement>('.services')?.dataset.message ?? '';
+      message.value = template.replace('{service}', service ?? '').replace('{body}', serviceBody ?? '');
+      message.dispatchEvent(new Event('input', { bubbles: true }));
+
+      window.smoothScrollTo(contact);
+
+      message.classList.remove('is-prefilled');
+      void message.offsetWidth;
+      message.classList.add('is-prefilled');
+      (nameField?.value ? message : nameField)?.focus({ preventScroll: true });
+    });
+  });
+
+  document.querySelectorAll<HTMLElement>('.service-card').forEach((card) => {
+    card.addEventListener('pointermove', (e) => {
+      const rect = card.getBoundingClientRect();
+      card.style.setProperty('--mx', `${e.clientX - rect.left}px`);
+      card.style.setProperty('--my', `${e.clientY - rect.top}px`);
+    });
+  });
+</script>

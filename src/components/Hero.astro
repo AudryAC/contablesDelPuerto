@@ -1,0 +1,55 @@
+---
+import { Icon } from 'astro-icon/components';
+import layer from '../../public/images/hero-layer.svg?raw';
+import { animateWaves } from '../utils/waves';
+import { ui, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'es' } = Astro.props;
+const t = ui[lang];
+
+const animatedLayer = animateWaves(
+  layer,
+  [{ amp: 7, k: 1, dur: 10 }, { amp: 9, k: 1.5, dur: 8 }, { amp: 12, k: 1, dur: 12 }],
+  { axis: 'x' },
+);
+---
+<section class="hero" id="inicio" aria-labelledby="hero-title">
+  <div class="hero-photo" aria-hidden="true" data-parallax="0.35"></div>
+  <div class="hero-layer" aria-hidden="true" data-parallax="0.15" set:html={animatedLayer} />
+  <div class="hero-people" aria-hidden="true" data-parallax="0.1">
+    <picture>
+      <source media="(max-width: 600px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
+      <img src="/images/team.webp" alt="" width="720" height="512" fetchpriority="high" decoding="async" />
+    </picture>
+  </div>
+
+  <div class="container hero-inner" data-parallax="0.25">
+    <div class="hero-copy">
+      <h1 id="hero-title" set:html={t.hero.title} />
+      <p class="hero-description">{t.hero.description}</p>
+      <div class="hero-actions">
+        <a href="#contacto" class="btn btn-primary">{t.hero.primary} <Icon name="lucide:arrow-right" class="btn-icon" aria-hidden="true" /></a>
+        <a href="#servicios" class="btn btn-outline">{t.hero.secondary}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const svg = document.querySelector<SVGSVGElement>('.hero-layer svg');
+  if (svg) {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) {
+      svg.pauseAnimations();
+      svg.setCurrentTime(0);
+    } else if ('IntersectionObserver' in window) {
+      new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) svg.unpauseAnimations();
+        else svg.pauseAnimations();
+      }).observe(svg);
+    }
+  }
+</script>
