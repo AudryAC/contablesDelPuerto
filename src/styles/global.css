@@ -159,10 +159,10 @@ button {
   transition: transform 0.25s ease;
 }
 .nav-link:hover::after {
-  transform: translateX(-50%) scaleX(0.5);
+  transform: translateX(-50%) scaleX(2);
 }
 .nav-link.active::after {
-  transform: translateX(-50%) scaleX(1);
+  transform: translateX(-50%) scaleX(3);
 }
 .nav-link.on-light {
   color: var(--navy);
