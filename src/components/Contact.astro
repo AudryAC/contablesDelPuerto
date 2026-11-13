@@ -15,7 +15,7 @@ const mapEmbed = `https://www.google.com/maps?q=${encodeURIComponent(address)}&z
 const directions = `https://www.google.com/maps/dir/?api=1&destination=${mapQuery}`;
 
 const info = [
-  { icon: 'lucide:phone', title: t.contact.phone, lines: ['322 226 5537'], href: 'tel:+523222265537' },
+  { icon: 'lucide:phone', title: t.contact.phone, lines: ['322 236 5537'], href: 'tel:+523222365537' },
   { icon: 'lucide:mail', title: t.contact.email, lines: [email], href: `mailto:${email}` },
   { icon: 'lucide:map-pin', title: t.contact.address, lines: ['Cupuri 83, Aramara,', '48314 Puerto Vallarta,', 'Jalisco'], href: directions },
   { icon: 'lucide:clock', title: t.contact.hours, lines: t.contact.hoursLines },
@@ -111,7 +111,7 @@ const info = [
           <Icon name="lucide:circle-check" is:inline aria-hidden="true" />
           <p>
             <strong>{t.contact.successTitle}</strong>
-            {t.contact.successBody} <a href={`mailto:${email}`}>{email}</a> {t.contact.successOr} <a href="tel:+523222265537">322 226 5537</a>.
+            {t.contact.successBody} <a href={`mailto:${email}`}>{email}</a> {t.contact.successOr} <a href="tel:+523222365537">322 236 5537</a>.
           </p>
         </div>
 
