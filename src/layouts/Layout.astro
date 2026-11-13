@@ -6,8 +6,9 @@ interface Props {
   lang?: Lang;
   title?: string;
   description?: string;
+  noindex?: boolean;
 }
-const { lang = 'es' } = Astro.props;
+const { lang = 'es', noindex = false } = Astro.props;
 const t = ui[lang];
 const { title = t.meta.title, description = t.meta.description } = Astro.props;
 
@@ -89,7 +90,7 @@ const schema = {
     <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow'} />
     <meta name="google-site-verification" content="mM1yy8KocrBp8KpwjOZSblY1N8qdxcRpdtx6qAl7CK0" />
     <meta name="theme-color" content="#082a50" />
 
@@ -115,8 +116,12 @@ const schema = {
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
     <script is:inline>document.documentElement.classList.add('js');</script>
 
-    <link rel="preload" as="image" href="/images/puerto-vallarta.webp" type="image/webp" media="(min-width: 601px)" fetchpriority="high" />
-    <link rel="preload" as="image" href="/images/puerto-vallarta-noblur.webp" type="image/webp" media="(max-width: 600px)" fetchpriority="high" />
+    {!noindex && (
+      <>
+      <link rel="preload" as="image" href="/images/puerto-vallarta.webp" type="image/webp" media="(min-width: 601px)" fetchpriority="high" />
+      <link rel="preload" as="image" href="/images/puerto-vallarta-noblur.webp" type="image/webp" media="(max-width: 600px)" fetchpriority="high" />
+      </>
+    )}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;600;700&display=swap" />

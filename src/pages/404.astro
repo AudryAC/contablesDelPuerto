@@ -1,0 +1,70 @@
+---
+import Layout from '../layouts/Layout.astro';
+import brandSvg from '../../public/images/brand.svg?raw';
+
+const brandLogo = brandSvg.replace('<svg', '<svg class="error-logo" role="img" aria-label="Soluciones Contables del Puerto"');
+---
+<Layout title="Página no encontrada | Contables del Puerto" description="La página que buscas no existe." noindex>
+  <main class="error-page" id="contenido">
+    <a href="/" class="error-brand" set:html={brandLogo} />
+    <p class="error-code" aria-hidden="true">404</p>
+    <h1>Página no encontrada</h1>
+    <p class="error-text">La página que buscas no existe o cambió de dirección.</p>
+    <p class="error-text error-text--en" lang="en">The page you are looking for doesn't exist or has moved.</p>
+    <div class="error-actions">
+      <a href="/" class="btn btn-primary">Ir al inicio</a>
+      <a href="/en/" class="btn btn-outline" lang="en">Go to home page</a>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .error-page {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    align-content: center;
+    gap: 14px;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding: 48px 24px;
+    text-align: center;
+    color: #fff;
+    background: linear-gradient(115deg, #062346 5%, #174d81 100%);
+  }
+  .error-brand :global(.error-logo) {
+    display: block;
+    width: auto;
+    height: 44px;
+    margin-bottom: 24px;
+  }
+  .error-code {
+    margin: 0;
+    font-size: clamp(72px, 18vw, 140px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    color: var(--secondary);
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(26px, 5vw, 38px);
+  }
+  .error-text {
+    max-width: 460px;
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.6;
+  }
+  .error-text--en {
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 15px;
+  }
+  .error-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 18px;
+  }
+</style>
